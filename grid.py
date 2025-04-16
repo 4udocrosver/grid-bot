@@ -17,14 +17,17 @@ logger = logging.getLogger(__name__)
 
 # Читання конфігурації
 try:
-    with open('config.json', 'r') as config_file:
-        config = json.load(config_file)
+    if os.getenv('CONFIG_JSON'):
+        config = json.loads(os.getenv('CONFIG_JSON'))
+    else:
+        with open('config.json', 'r') as config_file:
+            config = json.load(config_file)
     binance_api_key = config['BINANCE_API_KEY']
     binance_secret = config['BINANCE_SECRET']
     bot_token = config['TELEGRAM_BOT_TOKEN']
 except Exception as e:
-    logger.error(f"Помилка читання config.json: {e}")
-    raise SystemExit("Створіть config.json із BINANCE_API_KEY, BINANCE_SECRET, TELEGRAM_BOT_TOKEN")
+    logger.error(f"Помилка читання конфігурації: {e}")
+    raise SystemExit("Перевірте config.json або змінну CONFIG_JSON")
 
 # Налаштування Binance
 binance = ccxt.binance({
